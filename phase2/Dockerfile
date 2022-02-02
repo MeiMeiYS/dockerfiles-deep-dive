@@ -7,10 +7,10 @@
 # Step 3: Use alpine package manager to install tini: 'apk add --update tini'
 #   (tini is a package that can be used as an entry point in a container)
 
-# Step 4: With a single command, create a new directory for app files at the 
-#   path '/usr/src/app' and make that your current directory 
+# Step 4: With a single command, create a new directory for app files at the
+#   path '/usr/src/app' and make that your current directory
 
-# In the next steps, you will load and install packages before applications 
+# In the next steps, you will load and install packages before applications
 #   files for better caching
 
 # Step 5: Since node uses a "package manager", copy in 'package.json' and the
@@ -25,3 +25,14 @@
 #   Remember to use the "exec form" which is the preferred syntax
 #   Here is the documentation for CMD if you need a reminder:
 #   https://docs.docker.com/engine/reference/builder/#cmd
+
+
+FROM node:15.0.0-alpine
+EXPOSE 8081
+RUN apk add --update tini
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+RUN npm cache clean --force
+COPY . .
+CMD ["/sbin/tini", "node", "app.js"]
